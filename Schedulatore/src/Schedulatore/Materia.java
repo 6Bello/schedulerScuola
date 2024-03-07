@@ -13,6 +13,13 @@ public class Materia {
 		this.scansioneOraria = scansioneOraria;
 	}
 	
+	boolean oreTerminate() {
+		boolean oreTerminate = true;
+		for(int i=0; i<5; i++) {
+			if(scansioneOraria[i]>0) oreTerminate = false;
+		}
+		return oreTerminate;
+	}
 	String getNome() {
 		return nome;
 	}

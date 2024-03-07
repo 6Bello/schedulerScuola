@@ -21,8 +21,17 @@ public class Classe {
 	String getMaterie() {
 		String stringa ="";
 		for(int i=0; i<materie.size(); i++) {
-			stringa.concat(materie.get(i).getNome() + " : " + materie.get(i).getProfessore() + "\n"); 
+			stringa = stringa.concat(materie.get(i).getNome() + " : " + materie.get(i).getProfessore() + "\n"); 
 		}
 		return stringa;
+	}
+	
+	void printScansione(int [][] scansioniOrarie, String [] materie, int [] orario) {
+		for(int i=0; i<materie.length; i++) { //stampa la scnasione oraria
+			System.out.println(materie[i]);
+			for(int j=0; j<5; j++) {
+				System.out.println(scansioniOrarie[i][j]);
+			}
+		}
 	}
 }
