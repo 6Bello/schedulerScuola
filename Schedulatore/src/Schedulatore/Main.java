@@ -29,7 +29,8 @@ public class Main {
 		String[][] orarioSettimanale = new String [5][6];
 		int indiceMateriaAttuale=0;
 		for(int i=0; i<5; i++) { //for per girare i giorni
-			for(int j=-1; j<5; j=j) { //variabile per girare le ore all'interno di un giorno
+			int j = -1; //variabile per girare le ore all'interno di un giorno
+			while (j<5) {
 			//System.out.println("cambio ora");
 				for(int k=0; k<classe.materie.get(indiceMateriaAttuale).scansioneOraria.length; k++) {
 					//classe.printScansione(scansioniOrarie, materie, orario);
