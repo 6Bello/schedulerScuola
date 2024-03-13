@@ -8,6 +8,7 @@ public class Main {
 		String [] professori = new String[]{"italiano","inglese","matematica","scienze e geografia","fisica","chimica","diritto","TI","sta","TTRG","ed. fisica","religione","tutor"};
 		int [][] scansioniOrarie = new int[materie.length][5];
 		Classe classe = new Classe("1M", materie, professori, orario, scansioniOrarie);
+		Classe classe2 = new Classe("1N", materie, professori, orario, scansioniOrarie);
 		System.out.println(classe.getMaterie());
 		//questo for serve a mettere nella scansione oraria di ogni materia il numero di ore per ogni volta che sarà nella classe es:
 		//it:  2|1|1|1|1|
@@ -21,14 +22,43 @@ public class Main {
 				}
 			}
 		}
-		classe.printScansione(scansioniOrarie, materie, orario);
-		
+		classe.printScansione();
+		classe2.printScansione();
 		
 		
 		//for per mettere all'interno dell'orario le materie
+		String[][] orarioSettimanale1M = newOrario(classe); 
+		
+		System.out.println("orario creato");
+		
+		String[][] orarioSettimanale1N = newOrario(classe2, orarioSettimanale1M);
+
+		for(int i=0; i<6; i++) {
+			for(int j=0; j<5; j++) {
+				System.out.print("|" + orarioSettimanale1M[j][i]);
+				for(int k=0; k<20-orarioSettimanale1M[j][i].length(); k++) {
+					System.out.print(" ");
+				}
+			}
+			System.out.println("|");
+		}
+		
+		for(int i=0; i<6; i++) {
+			for(int j=0; j<5; j++) {
+				System.out.print("|" + orarioSettimanale1N[j][i]);
+				for(int k=0; k<20-orarioSettimanale1N[j][i].length(); k++) {
+					System.out.print(" ");
+				}
+			}
+			System.out.println("|");
+		}
+	}
+
+	static String [][] newOrario(Classe classe){
 		String[][] orarioSettimanale = new String [5][6];
 		int indiceMateriaAttuale=0;
 		for(int i=0; i<5; i++) { //for per girare i giorni
+			indiceMateriaAttuale=0;
 			int j = -1; //variabile per girare le ore all'interno di un giorno
 			while (j<5) {
 			//System.out.println("cambio ora");
@@ -49,7 +79,6 @@ public class Main {
 							System.out.println("ritorno prima materia");
 							indiceMateriaAttuale = 0;
 						}else indiceMateriaAttuale++;
-						classe.printScansione(scansioniOrarie, materie, orario);
 						break;
 					}else if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] != 0) { //se la materia deve avere per esempio 2 ore consecutive ma siamo all'ultima ora si prova con la matereia dopo
 						k=0;
@@ -63,13 +92,54 @@ public class Main {
 				}
 			}
 		}
-
-		for(int i=0; i<6; i++) {
-			for(int j=0; j<5; j++) {
-				System.out.print("|" + orarioSettimanale[j][i] + "|");
-			}
-			System.out.println("");
-		}
+		return orarioSettimanale;
 	}
-
+	
+	static String [][] newOrario(Classe classe, String[][] orarioSettimanaleParallelo){
+		String[][] orarioSettimanale = new String [5][6];
+		int indiceMateriaAttuale=0;
+		for(int i=0; i<5; i++) { //for per girare i giorni
+			indiceMateriaAttuale=0;
+			int j = -1; //variabile per girare le ore all'interno di un giorno
+			while (j<5) {
+			//System.out.println("cambio ora");
+				for(int k=0; k<classe.materie.get(indiceMateriaAttuale).scansioneOraria.length; k++) {
+					//classe.printScansione(scansioniOrarie, materie, orario);
+					if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] < 6-j && classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] != 0) {
+						System.out.println("foihrs");
+						for(int y=0; y<classe.materie.get(indiceMateriaAttuale).scansioneOraria[k]; y++) {
+							if(orarioSettimanaleParallelo[i][j] == classe.materie.get(indiceMateriaAttuale).nome) {
+								if(indiceMateriaAttuale >= classe.materie.size()-1) {
+									System.out.println("ritorno prima materia");
+									indiceMateriaAttuale = 0;
+								}else indiceMateriaAttuale++;
+							};
+							j++;
+							orarioSettimanale[i][j] = classe.materie.get(indiceMateriaAttuale).nome;
+							//System.out.println(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k]);
+							System.out.println("giorno: " + (i+1) + " ora: " + (j+1) + " materia: " + orarioSettimanale[i][j]);
+						}
+						classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] = 0;
+						if(classe.materie.get(indiceMateriaAttuale).oreTerminate()) {
+							classe.materie.remove(indiceMateriaAttuale);
+						}
+						if(indiceMateriaAttuale >= classe.materie.size()-1) {
+							System.out.println("ritorno prima materia");
+							indiceMateriaAttuale = 0;
+						}else indiceMateriaAttuale++;
+						break;
+					}else if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] != 0) { //se la materia deve avere per esempio 2 ore consecutive ma siamo all'ultima ora si prova con la matereia dopo
+						k=0;
+						int indiceMateriaDopo = indiceMateriaAttuale+1;
+						if(indiceMateriaDopo > classe.materie.size()-1) indiceMateriaDopo = 0;
+						Materia materiaDiAppoggio = classe.materie.get(indiceMateriaAttuale);
+						System.out.println("materia non disponibile");
+						classe.materie.set(indiceMateriaAttuale, classe.materie.get(indiceMateriaDopo));
+						classe.materie.set(indiceMateriaDopo, materiaDiAppoggio);							
+					}
+				}
+			}
+		}
+		return orarioSettimanale;
+	}
 }
