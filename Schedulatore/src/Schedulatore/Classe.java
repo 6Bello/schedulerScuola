@@ -26,11 +26,11 @@ public class Classe {
 		return stringa;
 	}
 	
-	void printScansione(int [][] scansioniOrarie, String [] materie, int [] orario) {
-		for(int i=0; i<materie.length; i++) { //stampa la scnasione oraria
-			System.out.println(materie[i]);
+	void printScansione() {
+		for(int i=0; i<materie.size(); i++) { //stampa la scnasione oraria
+			System.out.println(materie.get(i).nome);
 			for(int j=0; j<5; j++) {
-				System.out.println(scansioniOrarie[i][j]);
+				System.out.println(materie.get(i).scansioneOraria[j]);
 			}
 		}
 	}
