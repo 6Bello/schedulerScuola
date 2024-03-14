@@ -30,8 +30,9 @@ public class Classe {
 		for(int i=0; i<materie.size(); i++) { //stampa la scnasione oraria
 			System.out.println(materie.get(i).nome);
 			for(int j=0; j<5; j++) {
-				System.out.println(materie.get(i).scansioneOraria[j]);
+				System.out.print(materie.get(i).scansioneOraria[j]);
 			}
+			System.out.println();
 		}
 	}
 }
