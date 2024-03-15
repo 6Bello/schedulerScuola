@@ -25,18 +25,18 @@ public class Main {
 		int [][] scansioniOrarie2 = copyMatrix(scansioniOrarie);
 		Classe classe = new Classe("1M", materie, professori, orario, scansioniOrarie.clone());
 		Classe classe2 = new Classe("1N", materie, professori, orario, scansioniOrarie2 );
-		classe.printScansione();
-		classe2.printScansione();
-		System.out.println(classe.getMaterie());
+		//System.out.println(classe.getMaterie());
 		
 		//for per mettere all'interno dell'orario le materie
 		String[][] orarioSettimanale1M = newOrario(classe); 
 		
 		System.out.println("orario creato");
 		
+		orarioSettimanale1M = mescolaOrario(orarioSettimanale1M);
+		
 		String[][] orarioSettimanale1N = newOrario(classe2, orarioSettimanale1M);
 
-		for(int i=0; i<6; i++) {
+		/*for(int i=0; i<6; i++) {
 			for(int j=0; j<5; j++) {
 				System.out.print("|" + orarioSettimanale1M[j][i]);
 				for(int k=0; k<20-orarioSettimanale1M[j][i].length(); k++) {
@@ -62,7 +62,7 @@ public class Main {
 					System.out.println("errore");
 				}
 			}
-		}
+		}*/
 
 		//scrivere l'output degli orari su un unico file html con un orario sopra l'altro e con un colore diverso per ogni classe
 
@@ -72,7 +72,6 @@ public class Main {
 			writer.write("<html>\n");
 			writer.write("<head>\n");
 			writer.write("<style>\n");
-			//crea una classe per ogni materia con un colore diverso per ogni materia ed evitas che ci siano due colori uguali
 			writer.write(".italiano {background-color: #FF0000;}\n");
 			writer.write(".inglese {background-color: #00FF00;}\n");
 			writer.write(".matematica {background-color: #8084f8;}\n");
@@ -134,7 +133,6 @@ public class Main {
 			int j = -1; //variabile per girare le ore all'interno di un giorno
 			indiceMateriaAttuale=0;
 			while (j<5) {
-			//System.out.println("cambio ora");
 				for(int k=0; k<classe.materie.get(indiceMateriaAttuale).scansioneOraria.length; k++) {
 					//classe.printScansione(scansioniOrarie, materie, orario);
 					if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] < 6-j && classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] != 0) {
@@ -142,14 +140,13 @@ public class Main {
 							j++;
 							orarioSettimanale[i][j] = classe.materie.get(indiceMateriaAttuale).nome;
 							//System.out.println(classe.materie.get(indiceMateriaAttuale).scansioneOraria[k]);
-							System.out.println("giorno: " + (i+1) + " ora: " + (j+1) + " materia: " + orarioSettimanale[i][j]);
+							//System.out.println("giorno: " + (i+1) + " ora: " + (j+1) + " materia: " + orarioSettimanale[i][j]);
 						}
 						classe.materie.get(indiceMateriaAttuale).scansioneOraria[k] = 0;
 						if(classe.materie.get(indiceMateriaAttuale).oreTerminate()) {
 							classe.materie.remove(indiceMateriaAttuale);
 						}
 						if(indiceMateriaAttuale >= classe.materie.size()-1) {
-							System.out.println("ritorno prima materia");
 							indiceMateriaAttuale = 0;
 						}else indiceMateriaAttuale++;
 						break;
@@ -158,7 +155,7 @@ public class Main {
 						int indiceMateriaDopo = indiceMateriaAttuale+1;
 						if(indiceMateriaDopo > classe.materie.size()-1) indiceMateriaDopo = 0;
 						Materia materiaDiAppoggio = classe.materie.get(indiceMateriaAttuale);
-						System.out.println("materia non disponibile");
+						//System.out.println("materia non disponibile");
 						classe.materie.set(indiceMateriaAttuale, classe.materie.get(indiceMateriaDopo));
 						classe.materie.set(indiceMateriaDopo, materiaDiAppoggio);							
 					}
@@ -169,7 +166,6 @@ public class Main {
 	}
 	
 	static String [][] newOrario(Classe classe, String[][] orarioSettimanaleParallelo){
-		classe.printScansione();
 		String[][] orarioSettimanale = new String [5][6];
 		int indiceMateriaAttuale=0;
 		for(int i=0; i<5; i++) { //for per girare i giorni
@@ -195,7 +191,7 @@ public class Main {
 						if(classe.materie.get(indiceMateriaAttuale).oreTerminate()) {
 							classe.materie.remove(indiceMateriaAttuale);
 						}
-						indiceMateriaAttuale = newIndiceMateria(indiceMateriaAttuale, i, j, classe, orarioSettimanale);
+						indiceMateriaAttuale = newIndiceMateria(indiceMateriaAttuale, i, j+1, classe, orarioSettimanale);
 						//System.out.println("materia attuale:" + classe.materie.get(indiceMateriaAttuale).nome);
 					}
 			}
@@ -205,24 +201,37 @@ public class Main {
 
 	public static int newIndiceMateria(int indiceMateriaVecchia, int giorno, int ora, Classe classe, String[][] orarioSettimanale) {
 		//classe.printScansione();
+		if(classe.materie.size() == 0) return 0;
 		int indiceMateriaAttuale = 0;
 		for(int z=4-giorno; z>=0; z--) {
-			for(int x=0; x<classe.materie.size(); x++) {
-				if(x == indiceMateriaVecchia) continue; //se la materia è la stessa di prima si salta
-				boolean materiaPresente = false;
-				for(int y=0; y<ora; y++){ //se la materia è già presente durante il giorno si salta
-					if(classe.materie.get(x).nome == orarioSettimanale[giorno][y]) {
-						materiaPresente = true;
+			boolean materiaTrovata = false;
+			boolean[] indiciUtilizzati = new boolean[classe.materie.size()];
+			for(int i=0; i<classe.materie.size(); i++) {
+				indiciUtilizzati[i] = false;
+			}
+			if(indiceMateriaVecchia!=classe.materie.size())	indiciUtilizzati[indiceMateriaVecchia] = true;	
+			 for(int x=0; x<classe.materie.size(); x++){
+				 int materieProvate = 0;
+				 while(indiciUtilizzati[indiceMateriaAttuale] == true && materieProvate<classe.materie.size()) {
+					 indiceMateriaAttuale = (int) (Math.random() * classe.materie.size());	
+					 //System.out.println("materia prova ad entrare: " + classe.materie.get(indiceMateriaAttuale).nome);
+					 materieProvate++;
+				 }
+				 for(int y=0; y<ora; y++){ //se la materia è già presente durante il giorno si salta
+					if(classe.materie.get(indiceMateriaAttuale).nome == orarioSettimanale[giorno][y]) {
+						indiciUtilizzati[indiceMateriaAttuale] = true;
+						System.out.println("materia: " + classe.materie.get(indiceMateriaAttuale).nome);
+						break;
 					}
 				}
-				if (materiaPresente) continue;
-				if(classe.materie.get(x).scansioneOraria[z] != 0) { //se la materia è disponibile durante il giorno si prende
-					indiceMateriaAttuale = x;
-					break;
+				if (indiciUtilizzati[indiceMateriaAttuale] == false) {
+					if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[z] != 0) { //se la materia è disponibile durante il giorno si prende
+						return indiceMateriaAttuale;
+					}else indiciUtilizzati[indiceMateriaAttuale] = true;						
 				}
 			}
 		}
-		return indiceMateriaAttuale;
+		return 0;
 	}
 
 	public static int[][] copyMatrix(int[][] original) { //funzione per copiare una matrice
@@ -234,4 +243,17 @@ public class Main {
         
         return copy;
     }
+	
+	public static String[][] mescolaOrario(String[][] orario){
+		for(int i=1; i<5; i++) {
+			for(int j=0; j<6; j++) {
+				int primaMateria = (int) (Math.random() * 6);
+				int secondaMateria = (int) (Math.random() * 6);
+				String stringaAppoggio = orario[i][secondaMateria];
+				orario[i][secondaMateria] = orario[i][primaMateria];
+				orario[i][primaMateria] = stringaAppoggio;
+ 			}
+		}
+		return orario;
+	}
 }
