@@ -23,8 +23,10 @@ public class Main {
 			}
 		}
 		int [][] scansioniOrarie2 = copyMatrix(scansioniOrarie);
+		int [][] scansioniOrarie3 = copyMatrix(scansioniOrarie);
 		Classe classe = new Classe("1M", materie, professori, orario, scansioniOrarie.clone());
 		Classe classe2 = new Classe("1N", materie, professori, orario, scansioniOrarie2 );
+		Classe classe3 = new Classe("1O", materie, professori, orario, scansioniOrarie3);
 		//System.out.println(classe.getMaterie());
 		
 		//for per mettere all'interno dell'orario le materie
@@ -35,6 +37,13 @@ public class Main {
 		orarioSettimanale1M = mescolaOrario(orarioSettimanale1M);
 		
 		String[][] orarioSettimanale1N = newOrario(classe2, orarioSettimanale1M);
+
+		String[][][] orariSettimanaliParalleli = new String[][][]{orarioSettimanale1M, orarioSettimanale1N};
+		
+		String[][] orarioSettimanale1O = newOrario(classe3, orariSettimanaliParalleli);
+		
+		System.out.println("orario 1O fatto");
+		
 
 		/*for(int i=0; i<6; i++) {
 			for(int j=0; j<5; j++) {
@@ -105,6 +114,14 @@ public class Main {
 				writer.write("<tr>\n");
 				for (int j = 0; j < 5; j++) {
 					writer.write("<td class=\"" + orarioSettimanale1N[j][i] + "\">" + orarioSettimanale1N[j][i] + "</td>\n");
+				}
+			}
+			writer.write("</tr>\n");
+			writer.write("<th>Orario Classe 1O</th>\n");
+			for (int i = 0; i < 6; i++) {
+				writer.write("<tr>\n");
+				for (int j = 0; j < 5; j++) {
+					writer.write("<td class=\"" + orarioSettimanale1O[j][i] + "\">" + orarioSettimanale1O[j][i] + "</td>\n");
 				}
 			}
 			writer.write("</tr>\n");
@@ -199,12 +216,48 @@ public class Main {
 		return orarioSettimanale;
 	}
 
+	static String [][] newOrario(Classe classe, String[][][] orariSettimanaliParalleli){
+		String[][] orarioSettimanale = new String [5][6];
+		int indiceMateriaAttuale=0;
+		for(int i=0; i<5; i++) { //for per girare i giorni
+			indiceMateriaAttuale=0;
+			int j = -1; //variabile per girare le ore all'interno di un giorno
+			while (j<5) {
+					if(classe.materie.get(indiceMateriaAttuale).scansioneOraria[0] <  6-j && classe.materie.get(indiceMateriaAttuale).scansioneOraria[0] != 0) {  
+						for(int k=0; k<orariSettimanaliParalleli.length; k++){
+							if(classe.materie.get(indiceMateriaAttuale).nome == orariSettimanaliParalleli[k][i][j+1]) {
+								indiceMateriaAttuale = newIndiceMateria(indiceMateriaAttuale, i, j+1, classe, orarioSettimanale);
+								k=-1;
+							}
+					    }
+						for(int y=0; y<classe.materie.get(indiceMateriaAttuale).scansioneOraria[0]; y++) {
+							j++;
+							orarioSettimanale[i][j] = classe.materie.get(indiceMateriaAttuale).nome;
+							//System.out.println("giorno: " + (i+1) + " ora: " + (j+1) + " materia: " + orarioSettimanale[i][j]);
+						}
+						classe.materie.get(indiceMateriaAttuale).scansioneOraria[0] = 0;
+						//funzione per scalare le scansioni orarie pere uella materia
+						for(int z=0; z<classe.materie.get(indiceMateriaAttuale).scansioneOraria.length-1; z++) {
+							classe.materie.get(indiceMateriaAttuale).scansioneOraria[z] = classe.materie.get(indiceMateriaAttuale).scansioneOraria[z+1];
+							//classe.printScansione();
+						}
+						classe.materie.get(indiceMateriaAttuale).scansioneOraria[classe.materie.get(indiceMateriaAttuale).scansioneOraria.length-1] = 0;
+						if(classe.materie.get(indiceMateriaAttuale).oreTerminate()) {
+							classe.materie.remove(indiceMateriaAttuale);
+						}
+						indiceMateriaAttuale = newIndiceMateria(indiceMateriaAttuale, i, j+1, classe, orarioSettimanale);
+						//System.out.println("materia attuale:" + classe.materie.get(indiceMateriaAttuale).nome);
+					}
+			}
+		}
+		return orarioSettimanale;
+	}
+
 	public static int newIndiceMateria(int indiceMateriaVecchia, int giorno, int ora, Classe classe, String[][] orarioSettimanale) {
 		//classe.printScansione();
 		if(classe.materie.size() == 0) return 0;
 		int indiceMateriaAttuale = 0;
 		for(int z=4-giorno; z>=0; z--) {
-			boolean materiaTrovata = false;
 			boolean[] indiciUtilizzati = new boolean[classe.materie.size()];
 			for(int i=0; i<classe.materie.size(); i++) {
 				indiciUtilizzati[i] = false;
