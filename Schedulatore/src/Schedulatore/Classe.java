@@ -5,22 +5,22 @@ import java.util.ArrayList;
 public class Classe {
 	String nomeClasse;
 	ArrayList<Materia> materie = new ArrayList<Materia>();
-	ArrayList<Professore> professori = new ArrayList<Professore>();
+	ArrayList<String> cfProfessori = new ArrayList<String>();
 	
-	Classe(String nomeClasse, String[] nomeMaterie, String[] nomeProfessori, int[] oreSettimanaliPerMateria, int[][] scansioniOrarie, String[] cognomeProfessori, int[] oreSettimanaliPerProfessore) {
+	Classe(String nomeClasse, String[] nomeMaterie, int[] oreSettimanaliPerMateria, int[][] scansioniOrarie, String[] cfProfessori, int[] oreSettimanaliPerProfessore) {
 		this.nomeClasse = nomeClasse;
-		for(int i=0; i<nomeMaterie.length; i++) {
-			setProfessore(i, nomeProfessori[i], cognomeProfessori[i], i, oreSettimanaliPerProfessore[i], scansioniOrarie[i]);
-		}
+		/*for(int i=0; i<nomeMaterie.length; i++) {
+			setProfessore(i, nomecfProfessori[i], cognomecfProfessori[i], i, oreSettimanaliPerProfessore[i], scansioniOrarie[i]);
+		}*/
 
-		for(int i=0; i<nomeProfessori.length; i++) {
-			setMateria(i, nomeMaterie[i], nomeProfessori[i], oreSettimanaliPerMateria[i], scansioniOrarie[i]);
+		for(int i=0; i<cfProfessori.length; i++) {
+			setMateria(i, nomeMaterie[i], cfProfessori[i], oreSettimanaliPerMateria[i], scansioniOrarie[i]);
 		}
 	}
 
-	void setProfessore(int indice, String nome, String cognome, int nMaterie, int nOre, int[] scansioneOraria){
-		professori.add(new Professore(nome, cognome, nMaterie, nOre, scansioneOraria));
-	}
+	/*void setProfessore(int indice, String nome, String cognome, int nMaterie, int nOre, int[] scansioneOraria, String cf){
+		cfProfessori.add(new Professore(nome, cognome, nMaterie, nOre, scansioneOraria, cf));
+	}*/
 	
 	void setMateria(int indice, String nome, String professore, int ore, int[] scansioneOraria) {
 		//System.out.println(indice + ";" + nome + ";" + professore + ";" + ore + scansioneOraria.toString());
@@ -28,10 +28,10 @@ public class Classe {
 	}
 	
 
-	String getProfessori() {
+	String getcfProfessori() {
 		String stringa ="";
-		for(int i=0; i<professori.size(); i++) {
-			stringa = stringa.concat(professori.get(i).getNome() + " : " + materie.get(i).getNome() + "\n");
+		for(int i=0; i<cfProfessori.size(); i++) {
+			stringa = stringa.concat(cfProfessori.get(i));
 		}
 		return stringa;
 	}
@@ -39,7 +39,7 @@ public class Classe {
 	String getMaterie() {
 		String stringa ="";
 		for(int i=0; i<materie.size(); i++) {
-			stringa = stringa.concat(materie.get(i).getNome() + " : " + professori.get(i).getNome() + "\n"); 
+			stringa = stringa.concat(materie.get(i).getNome() + " : " + cfProfessori.get(i) + "\n"); 
 		}
 		return stringa;
 	}
